@@ -53,7 +53,31 @@ git clone https://github.com/hxphieno/auto-shit-skill .claude/skills/auto-shit-s
 
 安装后重启 Claude Code 即生效，无需修改任何配置文件。
 
+> 💡 openClaw 也可以使用！安装方式相同。
+> 
 > 嫌手动麻烦？让 AI 全程代理安装约消耗 1.3k tokens。
+
+---
+
+## 项目结构
+
+```
+auto-shit-skill/
+├── references/
+│   ├── flush-dot-claude.md
+│   ├── flush-memory.md
+│   ├── flush-plans.md
+│   ├── flush-skills.md
+│   ├── flush-worktrees.md
+│   ├── scan-context.md
+│   ├── scan-debris.md
+│   └── style.md
+├── .gitignore
+├── LICENSE
+├── README.md
+├── SKILL.md
+└── version.json
+```
 
 ---
 
@@ -128,29 +152,5 @@ Worktrees: 非 git 仓库，跳过
 .claude/ (项目级)
 ├── settings.json    ← 冗余配置项
 └── worktrees/       ← 已删除分支的残留目录
-```
-
----
-
-## 项目结构
-
-```
-auto-shit-skill/
-├── references/
-│   ├── flush-dot-claude.md
-│   ├── flush-memory.md
-│   ├── flush-plans.md
-│   ├── flush-skills.md
-│   ├── flush-worktrees.md
-│   ├── scan-context.md
-│   ├── scan-debris.md
-│   └── style.md
-├── .gitignore
-├── LICENSE
-├── README.md
-├── SKILL.md
-└── version.json
-```
-
 ---
 
