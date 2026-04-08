@@ -29,7 +29,7 @@
 
 ```json
 "enabledPlugins": {
-  "auto-shit@auto-shit-skill": true
+  "auto-shit-skill@auto-shit-skill": true
 }
 ```
 

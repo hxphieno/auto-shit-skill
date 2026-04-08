@@ -1,6 +1,10 @@
 ---
-name: auto-shit
+name: auto-shit-skill
 description: Use when the user wants to clean up Claude Code's environment — stale memory entries, expired .claude/ directory artifacts, ghost skill configs, abandoned worktrees, outdated plan documents, or unrelated project debris. Also triggers on "该拉屎了", "shit", "拉屎", "冲水", "flush", "便秘了", "堵了", "大扫除", "全冲", "定点拉屎", "别拉了", "查异物", "扫残留".
+compatibility: Designed for Claude Code (or similar agent environments)
+metadata:
+  author: hxphieno
+  version: "1.0.0"
 ---
 
 # auto-shit — Claude Code 环境卫生
@@ -99,16 +103,16 @@ echo "=== DONE ==="
 
 **触发词：** `冲水` / `flush`
 
-询问用户要清理哪个模块，然后 Read 对应的 `modules/` 文件并按其指令执行：
+询问用户要清理哪个模块，然后 Read 对应的 `references/` 文件并按其指令执行：
 
 | 用户说 | 动作 |
 |--------|------|
-| 冲 memory / 清记忆 | Read `modules/flush-memory.md` |
-| 冲 .claude / 清项目垃圾 | Read `modules/flush-dot-claude.md` |
-| 冲 plans / 清旧文档 | Read `modules/flush-plans.md` |
-| 冲 skills / 清废弃工具 | Read `modules/flush-skills.md` |
-| 冲 worktrees | Read `modules/flush-worktrees.md` |
-| 查异物 / 扫残留 | Read `modules/scan-debris.md` |
+| 冲 memory / 清记忆 | Read `references/flush-memory.md` |
+| 冲 .claude / 清项目垃圾 | Read `references/flush-dot-claude.md` |
+| 冲 plans / 清旧文档 | Read `references/flush-plans.md` |
+| 冲 skills / 清废弃工具 | Read `references/flush-skills.md` |
+| 冲 worktrees | Read `references/flush-worktrees.md` |
+| 查异物 / 扫残留 | Read `references/scan-debris.md` |
 
 模块执行完毕后，输出提示：「冲完了。运行 `/compact` 让改动立即生效，继续当前对话；或开新对话效果相同。」
 
@@ -118,7 +122,7 @@ echo "=== DONE ==="
 
 **触发词：** `便秘了` / `堵了` / `体检` / `scan`
 
-Read `modules/scan-context.md` 并按其指令执行深度诊断。
+Read `references/scan-context.md` 并按其指令执行深度诊断。
 
 ---
 
@@ -128,12 +132,12 @@ Read `modules/scan-context.md` 并按其指令执行深度诊断。
 
 按顺序执行全部 6 个模块，每个模块执行完毕后暂停等待用户确认再继续：
 
-1. Read `modules/flush-memory.md` 并执行 → 暂停，等用户确认
-2. Read `modules/scan-context.md` 并执行 → 暂停，等用户确认
-3. Read `modules/flush-dot-claude.md` 并执行 → 暂停，等用户确认
-4. Read `modules/flush-plans.md` 并执行 → 暂停，等用户确认
-5. Read `modules/flush-skills.md` 并执行 → 暂停，等用户确认
-6. Read `modules/flush-worktrees.md` 并执行 → 暂停，等用户确认
+1. Read `references/flush-memory.md` 并执行 → 暂停，等用户确认
+2. Read `references/scan-context.md` 并执行 → 暂停，等用户确认
+3. Read `references/flush-dot-claude.md` 并执行 → 暂停，等用户确认
+4. Read `references/flush-plans.md` 并执行 → 暂停，等用户确认
+5. Read `references/flush-skills.md` 并执行 → 暂停，等用户确认
+6. Read `references/flush-worktrees.md` 并执行 → 暂停，等用户确认
 
 ---
 
