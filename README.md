@@ -126,3 +126,25 @@ Worktrees: 非 git 仓库，跳过
 
 ---
 
+## 项目结构
+
+```
+auto-shit-skill/
+├── references/
+│   ├── flush-dot-claude.md
+│   ├── flush-memory.md
+│   ├── flush-plans.md
+│   ├── flush-skills.md
+│   ├── flush-worktrees.md
+│   ├── scan-context.md
+│   ├── scan-debris.md
+│   └── style.md
+├── .gitignore
+├── LICENSE
+├── README.md
+├── SKILL.md
+└── version.json
+```
+
+---
+
