@@ -1,0 +1,23 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "auto-shit-skill",
+  "owner": {
+    "name": "hxphieno"
+  },
+  "description": "Claude Code 环境卫生管理：清理过期 memory、plans、worktrees、plugin cache 等积累的垃圾",
+  "plugins": [
+    {
+      "name": "auto-shit-skill",
+      "source": "./",
+      "description": "Claude Code 环境排毒工具，支持快速体检、分模块清理、深度诊断和定时任务。",
+      "category": "productivity",
+      "keywords": [
+        "cleanup",
+        "maintenance",
+        "memory",
+        "environment",
+        "claude-code"
+      ]
+    }
+  ]
+}
