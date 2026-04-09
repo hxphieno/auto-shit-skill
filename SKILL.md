@@ -42,12 +42,15 @@ test -f "$proj/MEMORY.md" && echo "$proj/MEMORY.md" || echo "NONE"
 echo "=== DOTCLAUDE ==="
 ls .claude/ 2>/dev/null || echo "NONE"
 
-# Session transcripts（只列文件名 + 大小 + 首行内容预览）
+# Session transcripts（文件名 + 大小 + mtime 天数 + 前30行内容采样）
 echo "=== SESSIONS ==="
+now=$(date +%s)
 find "$proj" -maxdepth 1 -name "*.jsonl" 2>/dev/null | while read f; do
   size=$(du -h "$f" | cut -f1)
-  preview=$(head -1 "$f" 2>/dev/null | cut -c1-200)
-  echo "FILE:$f|SIZE:$size|PREVIEW:$preview"
+  mtime=$(stat -f %m "$f" 2>/dev/null || stat -c %Y "$f" 2>/dev/null)
+  age_days=$(( (now - mtime) / 86400 ))
+  sample=$(head -30 "$f" 2>/dev/null | cut -c1-200 | tr '\n' ' ')
+  echo "FILE:$f|SIZE:$size|AGE:${age_days}d|SAMPLE:$sample"
 done
 
 # Skills config
@@ -79,15 +82,15 @@ echo "=== DONE ==="
 
 **第二步：读取内容做相关性判断。** 基于第一步的文件清单：
 
-1. **Memory**：如果有 memory 文件，用 Read 逐个读取内容。判断每条 memory 是否与当前项目相关——提到了不存在的项目？记录了过时的偏好？与其他条目矛盾？输出每条的内容摘要和判断。
-2. **Sessions**：从第一步的 PREVIEW 字段判断每个 session 的话题。如果话题明显与当前工作无关（如讨论另一个项目的 bug），标记为可清理。不需要读完整 JSONL。
+1. **Memory**：如果有 memory 文件，用 Read 逐个读取内容。对每条 memory 输出一句话内容摘要（类型 + 核心信息），再判断是否与当前项目相关。
+2. **Sessions**：基于第一步 SAMPLE 字段（前 30 行 × 每行 200 字符），为每个 session 输出一句话内容摘要（讨论主题 + 涉及的功能/文件），再判断相关性。不要只输出"相关/无关"的结论。
 3. **Plans/Specs**：从标题和日期判断是否过时。如果日期很旧且标题涉及已完成的功能，标记为可归档。
 4. **Skills**：读 settings.json 内容，检查路径有效性和 MCP server 配置。
 5. **.claude/**：读 settings.local.json 内容，检查是否有冗余或冲突配置。
 6. **Plugin Cache**：从第一步结果直接判断重复/孤儿。
 7. **Worktrees**：从第一步结果直接判断。
 
-**输出格式：** 按 `style.md` 中的模板生成报告，替换 `{N}`、`{X}` 等占位符。每项标注 ✓（相关）或 ✗（建议清理）。清单为空时输出 style.md 中定义的"环境干净"回复。
+**输出格式：** 按 `style.md` 中的模板生成报告，替换 `{N}`、`{X}` 等占位符。每项标注 ✓（相关）、✗（建议清理）或 🕐（3 天内修改，暂不建议清理）。清单为空时输出 style.md 中定义的"环境干净"回复。
 
 **清单交互规则：**
 - 检查完成后，自动将所有标记为 ✗ 的项目汇总为「建议清理清单」，带编号
@@ -166,3 +169,4 @@ Read `references/scan-context.md` 并按其指令执行深度诊断。
 3. **不碰活跃配置。** 当前 session 正在使用的配置文件不做修改。
 4. **不使用 atime，使用 mtime + 配置注册状态** 判断文件是否过期。
 5. **flush-dot-claude 必须跳过 `scheduled_tasks` 中包含 `[auto-shit-cron]` 前缀的条目。** 避免自己把自己的定时任务冲掉。
+6. **3 天保护：mtime 在 3 天以内的文件不纳入"建议清理清单"。** 报告中照常显示摘要和判断，用 🕐 标记。用户可手动说"加上 N"将其加入清单。所有模块（快速检查、flush-*）统一遵守此规则。

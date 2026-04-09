@@ -11,12 +11,12 @@
 [auto-shit 如厕结果]
 
 🧠 Memory：{N} 条
-  - user_pref.md — "用户偏好简洁回复" → 仍然相关 ✓
-  - project_old.md — "用户在开发 ShopNext，用 Prisma" → 项目已不存在 ✗
+  - user_pref.md — [feedback] 用户偏好简洁回复，不要尾部总结 → 仍然相关 ✓
+  - project_old.md — [project] 用户在开发 ShopNext，用 Prisma → 项目已不存在 ✗
 
 💾 Sessions：{N} 个 transcript
-  - abc123.jsonl (3.2 MB) — 话题：auto-shit skill 开发 → 当前项目相关 ✓
-  - def456.jsonl (196K) — 话题：讨论 React 路由 → 与当前项目无关 ✗
+  - abc123.jsonl (3.2 MB, 2天前) — 开发 auto-shit skill，调整 flush-memory 死引用检测逻辑 → 当前项目 🕐
+  - def456.jsonl (196K, 15天前) — 讨论 React Router v6 嵌套路由配置 → 无关 ✗
 
 📄 Plans：{N} 份
   - 2026-04-07-auto-shit-design.md — "auto-shit Design Document" → 当前活跃 ✓
@@ -43,6 +43,7 @@
 
 - ✓ — 仍然相关，留着吧
 - ✗ — 这东西还没冲掉？加进清单
+- 🕐 — 3 天内改过，暂不建议清理（说"加上 N"可手动加入）
 
 ---
 
