@@ -53,9 +53,11 @@ git clone https://github.com/hxphieno/auto-shit-skill .claude/skills/auto-shit-s
 
 安装后重启 Claude Code 即生效，无需修改任何配置文件。
 
-> 💡 openClaw 也可以使用！安装方式相同。
-> 
-> 嫌手动麻烦？让 AI 全程代理安装约消耗 1.3k tokens。
+> 💡 嫌手动麻烦？让 AI 全程代理安装约消耗 1.3k tokens。
+>
+> **openClaw 适配进行中**
+>
+> 项目中的提示词是针对 Claude Code 优化的。我们尝试直接在 openClaw 上运行，目前测试中——有时工作良好，有时效果不太理想。适配优化正在推进，下个版本火速上线。
 
 ---
 
