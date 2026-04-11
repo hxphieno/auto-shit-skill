@@ -164,7 +164,7 @@ OpenClaw 独有模块（flush-media / flush-workspaces / flush-orphan-extensions
 2. **不得清除当前对话的上下文窗口。** auto-shit 清理的是持久化环境文件，不是当前会话内存。
 3. **不碰活跃配置。** 当前 session 正在使用的配置文件不做修改。
 4. **不使用 atime，使用 mtime + 配置注册状态** 判断文件是否过期。
-5. **flush-dot-claude 必须跳过 `scheduled_tasks` 中包含 `[auto-shit-cron]` 前缀的条目。** 避免自己把自己的定时任务冲掉。
+5. **flush-state 必须跳过定时任务中包含 `[auto-shit-cron]` 前缀的条目。** 避免自己把自己的定时任务冲掉。
    - Claude Code 中 `[auto-shit-cron]` 前缀在 prompt 字段；OpenClaw 中在 message 字段。
 6. **3 天保护：mtime 在 3 天以内的文件不纳入"建议清理清单"。** 报告中照常显示摘要和判断，用 🕐 标记。用户可手动说"加上 N"将其加入清单。所有模块（快速检查、flush-*）统一遵守此规则。
 7. **OpenClaw 平台同样遵守以上所有硬约束。** 平台差异仅在路径和工具接口，安全原则完全一致。
