@@ -1,8 +1,8 @@
 # flush-worktrees
 
-废弃 git worktree 清理。清理整个 git 项目的所有 worktree（含用户手动创建的），与 flush-dot-claude 步骤 3 的范围不同。
+废弃 git worktree 清理。清理整个 git 项目的所有 worktree（含用户手动创建的），与 flush-state 中 Claude Code 的 worktree 孤儿目录清理步骤范围不同。
 
-> **边界说明：** flush-dot-claude 步骤 3 只清理 `.claude/worktrees/` 下由 Claude Code 的 EnterWorktree 工具创建的目录。**本模块清理所有 git worktree**（包括用户通过 `git worktree add` 手动创建的），作用域是整个 git 项目。两者不重叠。
+> **边界说明：** flush-state 的 Claude Code 步骤 3 只清理 `.claude/worktrees/` 下由 Claude Code 的 EnterWorktree 工具创建的目录。**本模块清理所有 git worktree**（包括用户通过 `git worktree add` 手动创建的），作用域是整个 git 项目。两者不重叠。
 
 ---
 

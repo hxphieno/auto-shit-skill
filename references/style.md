@@ -1,6 +1,6 @@
 # auto-shit — 输出风格配置
 
-想换个说话方式？改这里就够了，工作流那边不用动。
+想换个说话方式？改这里就够了，工作流那边不用动。支持 Claude Code 和 OpenClaw 双平台。
 只管搞笑，不用担心把马桶冲坏。
 
 ---
@@ -25,6 +25,22 @@
 📦 Plugin Cache：{N} 个缓存副本（{X} MB） ✗
 📁 .claude/：{状态}
 🌿 Worktrees：{状态}
+
+以下仅在 OpenClaw 平台显示：
+
+📋 Logs：{N} 个日志文件（{X} MB）
+  - gateway.log (12 MB, 15天前) → 建议清理 ✗
+  - commands.log (3.2 MB, 8天前) → 建议清理 ✗
+
+⏱️ Cron Runs：{N} 个运行日志
+  - job-abc123.jsonl (56K) → 对应 job 已删除 ✗
+  - job-def456.jsonl (12K) → 活跃 job ✓
+
+🏚️ Legacy：{状态}
+  - ~/.clawdbot/ 存在（已迁移到 ~/.openclaw/）→ 可清理 ✗
+
+🔒 Lock：{状态}
+  - gateway.a1b2c3d4.lock → PID 12345 已死，可删除 ✗
 
 ---
 📋 建议冲水清单：
@@ -74,3 +90,8 @@
 | `冲 skills` / `清废弃工具` | 找出装了但没用的工具清单 |
 | `冲 worktrees` | 那些分支都删了，目录还在？清 |
 | `查异物` / `扫残留` | 项目里混进来的奇怪文件，揪出来 |
+| `冲状态` / `冲环境` | 合并清理状态目录（替代原冲 .claude） |
+| `冲插件` / `冲 extensions` | 合并清理插件/扩展（替代原冲 skills） |
+| `冲旧图` / `清旧图` | OpenClaw 媒体文件清理 |
+| `退旧房` / `清空房` | OpenClaw 废弃工作区清理 |
+| `拔废管` / `清废管` | OpenClaw 废弃扩展清理 |

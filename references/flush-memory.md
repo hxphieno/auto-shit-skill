@@ -1,13 +1,29 @@
 # flush-memory
 
-全局 memory 文件清理。CC 的 auto memory 系统只写入，从不清理。此模块填补空白。
+全局 memory 文件清理。Agent 的 memory 系统只写入，从不清理。此模块填补空白。
+
+---
+
+## 平台适配
+
+本模块根据运行平台确定 memory 目录路径：
+- **Claude Code**：Read `references/platforms/cc.md` 获取路径。Memory 在 `~/.claude/projects/<hash>/memory/`，索引在 `~/.claude/projects/<hash>/MEMORY.md`
+- **OpenClaw**：Read `references/platforms/openclaw.md` 获取路径。Memory 在 `~/.openclaw/workspace/memory/`（由 `session-memory` bundled hook 生成，来源 `src/hooks/bundled/session-memory/handler.ts:80`），索引在 `~/.openclaw/workspace/MEMORY.md`。多 workspace 支持：用 `ls -d ~/.openclaw/workspace-*/memory/ 2>/dev/null` 枚举所有 profile 的 memory 目录，逐个执行相同清理流程
 
 ---
 
 ## 输入
 
-- `~/.claude/projects/<hash>/memory/*.md`（CC 全局，hash 为当前工作目录路径中所有非字母数字字符替换为 `-`。优先用 `echo $(pwd) | sed 's/[^a-zA-Z0-9]/-/g'` 计算，再 `ls -d ~/.claude/projects/${hash}*` 匹配）
+根据平台不同：
+
+**Claude Code：**
+- `~/.claude/projects/<hash>/memory/*.md`（hash 为当前工作目录路径中所有非字母数字字符替换为 `-`。优先用 `echo $(pwd) | sed 's/[^a-zA-Z0-9]/-/g'` 计算，再 `ls -d ~/.claude/projects/${hash}*` 匹配）
 - `~/.claude/projects/<hash>/MEMORY.md`（索引文件）
+
+**OpenClaw：**
+- `~/.openclaw/workspace/memory/*.md`（默认 workspace）
+- `~/.openclaw/workspace-*/memory/*.md`（其他 profile workspace，逐个处理）
+- `~/.openclaw/workspace/MEMORY.md`（索引文件）
 
 ---
 
