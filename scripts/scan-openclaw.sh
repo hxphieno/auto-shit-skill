@@ -76,7 +76,7 @@ if [ -d "$CRON_RUNS_DIR" ]; then
     size=$(du -h "$f" | cut -f1)
     fname=$(basename "$f" .jsonl)
     if [ -f "$CRON_JOBS_FILE" ] && command -v jq >/dev/null 2>&1; then
-      job_exists=$(jq -r --arg id "$fname" 'if type=="array" then .[] | select(.id==$id) elif type=="object" then .[$id] else empty end' "$CRON_JOBS_FILE" 2>/dev/null | head -1)
+      job_exists=$(jq -r --arg id "$fname" '.jobs[]? | select(.id==$id)' "$CRON_JOBS_FILE" 2>/dev/null | head -1)
     else
       job_exists=""
     fi

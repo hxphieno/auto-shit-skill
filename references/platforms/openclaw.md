@@ -57,7 +57,7 @@
 
 OpenClaw 通过 CLI 命令管理 cron（需 gateway 运行中）：
 - `openclaw cron add --name <name> --message <text> --cron <expr>` — 添加任务（来源 `src/cli/cron-cli/register.cron-add.ts:69-107`）
-- `openclaw cron remove --name <name>` — 删除任务
+- `openclaw cron remove <id>` — 删除任务（positional argument，来源 `src/cli/cron-cli/register.cron-simple.ts:35-39`）
 - `openclaw cron list` — 列出所有任务（来源 `src/cli/cron-cli/register.cron-simple.ts:43`）
 
 **禁止直接读写 `jobs.json`** — 该文件由 gateway 进程管理，直接修改会导致状态不一致。

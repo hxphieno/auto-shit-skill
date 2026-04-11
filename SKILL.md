@@ -154,7 +154,7 @@ OpenClaw 独有模块（flush-media / flush-workspaces / flush-orphan-extensions
 **OpenClaw 平台取消定时：**
 
 - 使用 `openclaw cron list` 查找所有 message 包含 `[auto-shit-cron]` 的任务
-- 对找到的每个任务调用 `openclaw cron remove --name <name>` 删除
+- 对找到的每个任务调用 `openclaw cron remove <id>` 删除
 
 ---
 

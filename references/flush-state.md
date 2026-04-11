@@ -112,7 +112,7 @@ Session transcript 文件存放在 CC 全局目录，不在项目 `.claude/` 下
    - message 内容引用了不存在的文件或项目（已过时的孤儿任务）。
    - cron 指向过去的时间点，已超过 7 天自动过期期限但条目仍残留。
 4. 将标记结果列表展示给用户，等待确认。
-5. 使用 `openclaw cron remove --name <name>` 删除用户确认的条目。**禁止直接修改 `jobs.json`** — 该文件由 gateway 进程管理，直接修改会导致状态不一致。
+5. 使用 `openclaw cron remove <id>` 删除用户确认的条目。**禁止直接修改 `jobs.json`** — 该文件由 gateway 进程管理，直接修改会导致状态不一致。
 
 ---
 
