@@ -29,9 +29,9 @@ The skill is entirely specification-driven:
 | `大扫除` / `全冲` | All 6 modules sequentially, pause between each |
 | `定点拉屎` | Register durable cron via CronCreate |
 | `别拉了` | Cancel via CronList + CronDelete |
-| `冲旧图` | OpenClaw: flush-extensions (duplicate detection) |
-| `退旧房` | OpenClaw: flush-state (clean old session state) |
-| `拔废管` | OpenClaw: flush-references (remove stale references) |
+| `冲旧图` | OpenClaw: `Read references/flush-media.md` (媒体文件清理) |
+| `退旧房` | OpenClaw: `Read references/flush-workspaces.md` (废弃工作区清理) |
+| `拔废管` | OpenClaw: `Read references/flush-orphan-extensions.md` (废弃扩展清理) |
 
 ### Safety rules (must be preserved in all edits)
 
