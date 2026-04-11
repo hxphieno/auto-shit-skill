@@ -1,15 +1,30 @@
 ---
 name: auto-shit-skill
-description: Use when the user wants to clean up Claude Code's environment — stale memory entries, expired .claude/ directory artifacts, ghost skill configs, abandoned worktrees, outdated plan documents, or unrelated project debris. Also triggers on "该拉屎了", "shit", "拉屎", "冲水", "flush", "便秘了", "堵了", "大扫除", "全冲", "定点拉屎", "别拉了", "查异物", "扫残留".
-compatibility: Designed for Claude Code (or similar agent environments)
+description: Use when the user wants to clean up the agent environment (Claude Code or OpenClaw) — stale memory entries, expired state directory artifacts, ghost skill/extension configs, abandoned worktrees, outdated plan documents, or unrelated project debris. Also triggers on "该拉屎了", "shit", "拉屎", "冲水", "flush", "便秘了", "堵了", "大扫除", "全冲", "定点拉屎", "别拉了", "查异物", "扫残留".
+compatibility: Designed for Claude Code and OpenClaw
 metadata:
   author: hxphieno
-  version: "1.0.0"
+  version: "1.1.0"
+  platforms: "claude-code, openclaw"
 ---
 
-# auto-shit — Claude Code 环境卫生
+# auto-shit — Agent 环境卫生
 
-清理 Claude Code 在工作过程中积累的认知与环境垃圾。只扫描和清理 CC 自身环境，不碰用户代码。
+清理 agent 在工作过程中积累的认知与环境垃圾。支持 Claude Code 和 OpenClaw。只扫描和清理 agent 自身环境，不碰用户代码。
+
+---
+
+## 平台识别
+
+确认你的运行平台：
+- 如果你是 Claude Code，设 `PLATFORM=cc`
+- 如果你是 OpenClaw，设 `PLATFORM=openclaw`
+- 如果不确定，运行 `scripts/detect-platform.sh` 验证
+
+验证规则：
+- 你说自己是 Claude Code 但 `~/.claude` 不存在 → 报警提示环境异常
+- 你说自己是 OpenClaw 但 `~/.openclaw` 不存在 → 报警提示环境异常
+- 两个目录都存在 → 正常，走你自识别的平台
 
 ---
 
@@ -23,64 +38,21 @@ metadata:
 
 **核心原则：读内容做相关性判断，不只统计体积。** 体积信息作为辅助展示，主要输出是内容摘要和清理建议。
 
-**第一步：用单个 Bash 收集文件清单（用户只需 allow 一次）：**
+**第一步：平台识别与环境验证**
 
-**注意：** 脚本必须兼容 zsh 和 bash。zsh 的 `nomatch` 选项会在 glob 无匹配时报错退出，必须在脚本开头禁用。所有 `ls *.md` 类操作都加 `2>/dev/null` 防止报错。确保脚本一次执行成功，不要出现失败重试。
+运行 `scripts/detect-platform.sh`，对比模型自识别结果验证环境。
 
-```bash
-# 兼容 zsh/bash：glob 无匹配时返回空而非报错
-setopt nullglob 2>/dev/null || shopt -s nullglob 2>/dev/null
-proj=$(ls -d ~/.claude/projects/$(echo "$(pwd)" | sed 's/[^a-zA-Z0-9]/-/g')* 2>/dev/null | head -1)
+**第二步：用单个 Bash 收集文件清单（用户只需 allow 一次）**
 
-# Memory 文件列表
-echo "=== MEMORY ==="
-find "$proj/memory" -name "*.md" 2>/dev/null || echo "NONE"
-echo "=== MEMINDEX ==="
-test -f "$proj/MEMORY.md" && echo "$proj/MEMORY.md" || echo "NONE"
+根据 PLATFORM 运行对应采集脚本：
+- Claude Code：运行 `scripts/scan-cc.sh`
+- OpenClaw：运行 `scripts/scan-openclaw.sh`
 
-# .claude/ 内容
-echo "=== DOTCLAUDE ==="
-ls .claude/ 2>/dev/null || echo "NONE"
+然后运行 `scripts/scan-common.sh` 采集通用信息（Plans/Specs、Git/Worktrees）。
 
-# Session transcripts（文件名 + 大小 + mtime 天数 + 前30行内容采样）
-echo "=== SESSIONS ==="
-now=$(date +%s)
-find "$proj" -maxdepth 1 -name "*.jsonl" 2>/dev/null | while read f; do
-  size=$(du -h "$f" | cut -f1)
-  mtime=$(stat -f %m "$f" 2>/dev/null || stat -c %Y "$f" 2>/dev/null)
-  age_days=$(( (now - mtime) / 86400 ))
-  sample=$(head -30 "$f" 2>/dev/null | cut -c1-200 | tr '\n' ' ')
-  echo "FILE:$f|SIZE:$size|AGE:${age_days}d|SAMPLE:$sample"
-done
+**注意：** 所有脚本已兼容 zsh 和 bash，无需额外处理。
 
-# Skills config
-echo "=== SKILLS ==="
-cat ~/.claude/settings.json 2>/dev/null || echo "NONE"
-
-# Plugin cache
-echo "=== CACHE ==="
-find ~/.claude/plugins/cache -maxdepth 1 -type d 2>/dev/null | tail -n +2 | while read d; do
-  name=$(basename "$d")
-  size=$(du -sh "$d" 2>/dev/null | cut -f1)
-  has_mp=$(test -d ~/.claude/plugins/marketplaces/$name && echo "dup" || echo "orphan")
-  echo "$name|$size|$has_mp"
-done
-
-# Plans/Specs（列文件名 + 首行标题）
-echo "=== PLANS ==="
-find docs/superpowers/specs docs/superpowers/plans -name "*.md" 2>/dev/null | while read f; do
-  title=$(head -3 "$f" | grep -m1 "^#" || echo "(无标题)")
-  echo "FILE:$f|TITLE:$title"
-done
-
-# Git + Worktrees
-echo "=== GIT ==="
-git rev-parse --is-inside-work-tree 2>/dev/null && git worktree list 2>/dev/null || echo "NOT_GIT"
-
-echo "=== DONE ==="
-```
-
-**第二步：读取内容做相关性判断。** 基于第一步的文件清单：
+**第三步：读取内容做相关性判断。** 基于第二步的文件清单：
 
 1. **Memory**：如果有 memory 文件，用 Read 逐个读取内容。对每条 memory 输出一句话内容摘要（类型 + 核心信息），再判断是否与当前项目相关。
 2. **Sessions**：基于第一步 SAMPLE 字段（前 30 行 × 每行 200 字符），为每个 session 输出一句话内容摘要（讨论主题 + 涉及的功能/文件），再判断相关性。不要只输出"相关/无关"的结论。
@@ -89,6 +61,10 @@ echo "=== DONE ==="
 5. **.claude/**：读 settings.local.json 内容，检查是否有冗余或冲突配置。
 6. **Plugin Cache**：从第一步结果直接判断重复/孤儿。
 7. **Worktrees**：从第一步结果直接判断。
+8. **Logs**（仅 OpenClaw）：按 mtime 和体积给出清理建议，> 7 天或 > 50MB 标 ✗
+9. **Cron Runs**（仅 OpenClaw）：已删除 job 的日志标 ✗，活跃 job 的日志标 🕐
+10. **Legacy**（仅 OpenClaw）：`.clawdbot/` 存在且 `.openclaw/` 也存在 → 标 ✗ 并提示可调用 `openclaw doctor --fix`
+11. **Lock**（仅 OpenClaw）：锁文件存在但进程已死 → 标 ✗
 
 **输出格式：** 按 `style.md` 中的模板生成报告，替换 `{N}`、`{X}` 等占位符。每项标注 ✓（相关）、✗（建议清理）或 🕐（3 天内修改，暂不建议清理）。清单为空时输出 style.md 中定义的"环境干净"回复。
 
@@ -111,11 +87,16 @@ echo "=== DONE ==="
 | 用户说 | 动作 |
 |--------|------|
 | 冲 memory / 清记忆 | Read `references/flush-memory.md` |
-| 冲 .claude / 清项目垃圾 | Read `references/flush-dot-claude.md` |
+| 冲状态 / 冲 .claude / 冲环境 | Read `references/flush-state.md` |
+| 冲插件 / 冲 skills / 冲 extensions | Read `references/flush-extensions.md` |
 | 冲 plans / 清旧文档 | Read `references/flush-plans.md` |
-| 冲 skills / 清废弃工具 | Read `references/flush-skills.md` |
 | 冲 worktrees | Read `references/flush-worktrees.md` |
 | 查异物 / 扫残留 | Read `references/scan-debris.md` |
+| 冲旧图 / 清旧图 | Read `references/flush-media.md`（仅 OpenClaw） |
+| 退旧房 / 清空房 | Read `references/flush-workspaces.md`（仅 OpenClaw） |
+| 拔废管 / 清废管 | Read `references/flush-orphan-extensions.md`（仅 OpenClaw） |
+
+Claude Code 环境下触发 OpenClaw 独有命令，回复："这个功能仅适用于 OpenClaw 环境。"
 
 模块执行完毕后，输出提示：「冲完了。运行 `/compact` 让改动立即生效，继续当前对话；或开新对话效果相同。」
 
@@ -127,20 +108,24 @@ echo "=== DONE ==="
 
 Read `references/scan-context.md` 并按其指令执行深度诊断。
 
+**OpenClaw 平台注意：** scan-context 深度诊断尚未适配 OpenClaw 平台，将在后续版本支持。OpenClaw 用户触发此命令时，输出提示：「scan-context 深度诊断尚未适配 OpenClaw 平台，将在后续版本支持。当前可用：`openclaw doctor` 进行系统级诊断。」
+
 ---
 
 ### 全量清理
 
 **触发词：** `大扫除` / `全冲`
 
-按顺序执行全部 6 个模块，每个模块执行完毕后暂停等待用户确认再继续：
+按顺序执行清理模块，每个模块执行完毕后暂停等待用户确认再继续：
 
 1. Read `references/flush-memory.md` 并执行 → 暂停，等用户确认
-2. Read `references/scan-context.md` 并执行 → 暂停，等用户确认
-3. Read `references/flush-dot-claude.md` 并执行 → 暂停，等用户确认
+2. Read `references/scan-context.md` 并执行 → 暂停（Claude Code 执行诊断；OpenClaw 跳过并提示"scan-context 尚未适配 OpenClaw，跳过"）
+3. Read `references/flush-state.md` 并执行 → 暂停，等用户确认
 4. Read `references/flush-plans.md` 并执行 → 暂停，等用户确认
-5. Read `references/flush-skills.md` 并执行 → 暂停，等用户确认
+5. Read `references/flush-extensions.md` 并执行 → 暂停，等用户确认
 6. Read `references/flush-worktrees.md` 并执行 → 暂停，等用户确认
+
+OpenClaw 独有模块（flush-media / flush-workspaces / flush-orphan-extensions）不进入大扫除序列。
 
 ---
 
@@ -160,6 +145,17 @@ Read `references/scan-context.md` 并按其指令执行深度诊断。
 - 使用 CronList 查找所有 prompt 包含 `[auto-shit-cron]` 前缀的任务。
 - 对找到的每个任务调用 CronDelete 删除。
 
+**OpenClaw 平台定时任务注册：**
+
+- 需要 gateway 正在运行。如果 gateway 未启动，提示用户先运行 `openclaw gateway` 或 `openclaw onboard --install-daemon`
+- 使用 `openclaw cron add --name "auto-shit-check" --message "[auto-shit-cron] 执行 auto-shit 快速检查。注册日期：{YYYY-MM-DD}。如果今天日期距注册日期已满 6 天，在报告末尾追加：你的 auto-shit 定时拉屎将在明天到期，要续期吗？" --cron "<expr>"`
+- Cron 表达式避免整点分钟（例如用 9:03 而非 9:00）
+
+**OpenClaw 平台取消定时：**
+
+- 使用 `openclaw cron list` 查找所有 message 包含 `[auto-shit-cron]` 的任务
+- 对找到的每个任务调用 `openclaw cron remove --name <name>` 删除
+
 ---
 
 ## 硬约束
@@ -169,4 +165,6 @@ Read `references/scan-context.md` 并按其指令执行深度诊断。
 3. **不碰活跃配置。** 当前 session 正在使用的配置文件不做修改。
 4. **不使用 atime，使用 mtime + 配置注册状态** 判断文件是否过期。
 5. **flush-dot-claude 必须跳过 `scheduled_tasks` 中包含 `[auto-shit-cron]` 前缀的条目。** 避免自己把自己的定时任务冲掉。
+   - Claude Code 中 `[auto-shit-cron]` 前缀在 prompt 字段；OpenClaw 中在 message 字段。
 6. **3 天保护：mtime 在 3 天以内的文件不纳入"建议清理清单"。** 报告中照常显示摘要和判断，用 🕐 标记。用户可手动说"加上 N"将其加入清单。所有模块（快速检查、flush-*）统一遵守此规则。
+7. **OpenClaw 平台同样遵守以上所有硬约束。** 平台差异仅在路径和工具接口，安全原则完全一致。
