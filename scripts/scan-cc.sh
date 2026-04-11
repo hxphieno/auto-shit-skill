@@ -36,16 +36,3 @@ find ~/.claude/plugins/cache -maxdepth 1 -type d 2>/dev/null | tail -n +2 | whil
   has_mp=$(test -d ~/.claude/plugins/marketplaces/$name && echo "dup" || echo "orphan")
   echo "$name|$size|$has_mp"
 done
-
-# Plans/Specs（列文件名 + 首行标题）
-echo "=== PLANS ==="
-find docs/superpowers/specs docs/superpowers/plans -name "*.md" 2>/dev/null | while read f; do
-  title=$(head -3 "$f" | grep -m1 "^#" || echo "(无标题)")
-  echo "FILE:$f|TITLE:$title"
-done
-
-# Git + Worktrees
-echo "=== GIT ==="
-git rev-parse --is-inside-work-tree 2>/dev/null && git worktree list 2>/dev/null || echo "NOT_GIT"
-
-echo "=== DONE ==="
