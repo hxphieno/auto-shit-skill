@@ -1,7 +1,11 @@
 #!/bin/bash
 # 兼容 zsh/bash：glob 无匹配时返回空而非报错
 setopt nullglob 2>/dev/null || shopt -s nullglob 2>/dev/null
-proj=$(ls -d ~/.claude/projects/$(echo "$(pwd)" | sed 's/[^a-zA-Z0-9]/-/g')* 2>/dev/null | head -1)
+# Accept project dir as $1 (explicit) or fall back to pwd.
+# Caller must NOT cd into the skill install directory before running this script,
+# or pass the project directory explicitly: scan-cc.sh "$PROJECT_DIR"
+project_dir="${1:-$(pwd)}"
+proj=$(ls -d ~/.claude/projects/$(echo "$project_dir" | sed 's/[^a-zA-Z0-9]/-/g')* 2>/dev/null | head -1)
 
 # Memory 文件列表
 echo "=== MEMORY ==="

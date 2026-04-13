@@ -44,9 +44,9 @@ metadata:
 
 **第二步：用单个 Bash 收集文件清单（用户只需 allow 一次）**
 
-根据 PLATFORM 运行对应采集脚本：
-- Claude Code：运行 `scripts/scan-cc.sh`
-- OpenClaw：运行 `scripts/scan-openclaw.sh`
+根据 PLATFORM 运行对应采集脚本，**必须传入当前项目目录作为第一个参数**：
+- Claude Code：运行 `scripts/scan-cc.sh "$(pwd)"`
+- OpenClaw：运行 `scripts/scan-openclaw.sh "$(pwd)"`
 
 然后运行 `scripts/scan-common.sh` 采集通用信息（Plans/Specs、Git/Worktrees）。
 
